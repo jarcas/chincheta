@@ -5,7 +5,8 @@ Python and PySide6.
 
 ## Languages
 
-- [English](README.en.md)
+- [English](README.md)
+- [Español](README.es.md)
 - [Deutsch](README.de.md)
 
 ## Features

@@ -178,6 +178,15 @@ class StickyNote(QWidget):
         widget.setProperty("hover_hint", text)
         widget.installEventFilter(self)
 
+    def retranslate(self) -> None:
+        self.title.setPlaceholderText(self.app.t("title"))
+        self.body.setPlaceholderText(self.app.t("body"))
+        self._set_hover_hint(self.drag_handle, self.app.t("drag"))
+        self._set_hover_hint(self.colour_button, self.app.t("colour"))
+        self._set_hover_hint(self.delete_button, self.app.t("delete"))
+        self.update_pin_button(self.pin_button.isChecked())
+        self.hover_hint.hide()
+
     def eventFilter(self, watched, event) -> bool:
         if watched.property("hover_hint"):
             if event.type() == QEvent.Type.Enter:
@@ -420,16 +429,26 @@ class ChinchetaApp:
         form = QFormLayout(dialog)
         language = QComboBox()
         language.addItem("Español", "es"); language.addItem("English", "en"); language.addItem("Deutsch", "de")
-        language.setCurrentIndex(language.findData(self.language)); form.addRow(self.t("language"), language)
+        language_label = QLabel(self.t("language"))
+        language.setCurrentIndex(language.findData(self.language)); form.addRow(language_label, language)
         autostart = QCheckBox(self.t("autostart"))
         autostart.setChecked(AUTOSTART_FILE.exists())
         form.addRow(autostart)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel); form.addRow(buttons)
-        buttons.button(QDialogButtonBox.StandardButton.Save).setText(self.t("save"))
-        buttons.button(QDialogButtonBox.StandardButton.Cancel).setText(self.t("cancel"))
         buttons.button(QDialogButtonBox.StandardButton.Save).setIcon(action_icon("accept"))
         buttons.button(QDialogButtonBox.StandardButton.Cancel).setIcon(action_icon("cancel"))
         buttons.accepted.connect(dialog.accept); buttons.rejected.connect(dialog.reject)
+
+        def update_dialog_language(code: str) -> None:
+            texts = TEXT.get(code, TEXT["es"])
+            dialog.setWindowTitle(texts["settings"])
+            language_label.setText(texts["language"])
+            autostart.setText(texts["autostart"])
+            buttons.button(QDialogButtonBox.StandardButton.Save).setText(texts["save"])
+            buttons.button(QDialogButtonBox.StandardButton.Cancel).setText(texts["cancel"])
+
+        update_dialog_language(self.language)
+        language.currentIndexChanged.connect(lambda _: update_dialog_language(language.currentData()))
         if dialog.exec():
             self.set_autostart(autostart.isChecked())
             selected = language.currentData()
@@ -438,6 +457,8 @@ class ChinchetaApp:
                 self.settings.setValue("language", selected)
                 self.new_action.setText(self.t("new")); self.show_action.setText(self.t("show")); self.hide_action.setText(self.t("hide"))
                 self.preferences_action.setText(self.t("prefs")); self.quit_action.setText(self.t("quit"))
+                for note in self.notes.values():
+                    note.retranslate()
 
     def quit(self) -> None:
         for note in self.notes.values(): note.save_geometry(); note.save()

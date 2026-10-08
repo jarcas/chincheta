@@ -31,7 +31,7 @@ VENV_DELETE_MARKER = DATA_DIR / ".delete-venv-on-exit"
 DESKTOP_FILE = Path.home() / ".local" / "share" / "applications" / "chincheta.desktop"
 AUTOSTART_FILE = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "autostart" / "chincheta.desktop"
 KWIN_SCRIPT = Path(__file__).with_name("kwin_keep_above.js")
-COLOURS = ["#FFF59D", "#FFCCBC", "#B2DFDB", "#BBDEFB", "#E1BEE7"]
+COLOURS = ["#FFF59D", "#EF5350", "#C8E6C9", "#B2DFDB", "#BBDEFB", "#E1BEE7"]
 HOVER_HINT_STYLE = (
     "QLabel#hoverHint {"
     " background-color: #fffbe6;"
@@ -157,7 +157,7 @@ class StickyNote(QWidget):
         layout = QVBoxLayout(self); layout.setContentsMargins(10, 8, 10, 10); layout.setSpacing(6)
         header = QHBoxLayout(); header.setSpacing(4)
         self.drag_handle = DragHandle(self)
-        self.title = QLineEdit(); self.title.setPlaceholderText(self.app.t("title")); self.title.setFrame(False)
+        self.title = QLineEdit(); self.title.setObjectName("noteTitle"); self.title.setPlaceholderText(self.app.t("title")); self.title.setFrame(False)
         self.title.textChanged.connect(self.save)
         self.colour_button = QPushButton("●"); self.colour_button.clicked.connect(self.choose_colour)
         self.pin_button = QPushButton("📌"); self.pin_button.setCheckable(True); self.pin_button.toggled.connect(self.set_pinned)
@@ -231,6 +231,7 @@ class StickyNote(QWidget):
         self.setStyleSheet(
             f"QWidget#stickyNote {{ background-color: {colour}; color: #2b2924; border: 1px solid #c6bc73; }}"
             f"QLineEdit, QTextEdit, QTextEdit QWidget {{ background-color: {colour}; color: #2b2924; }}"
+            "QLineEdit#noteTitle { font-weight: 700; }"
             "QLineEdit, QTextEdit { border: none; }"
             "QLabel#dragHandle { background: transparent; color: #2b2924; }"
             "QPushButton { border: none; background: transparent; color: #2b2924; min-width: 22px; }"

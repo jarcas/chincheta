@@ -97,10 +97,10 @@ python3 -m py_compile chincheta.py storage.py kwin_rules.py
 
 ## Project structure
 
-- `chincheta.py` — user interface and application behavior
-- `storage.py` — SQLite persistence
-- `kwin_rules.py` — KWin rule integration for native Wayland fallback
-- `kwin_keep_above.js` — KWin always-on-top helper
-- `kwin-script/` — installable KWin script package
-- `run_chincheta.sh` — environment bootstrap and application launcher
-- `tests/` — automated tests
+- `chincheta.py` - user interface and application behavior
+- `storage.py` - SQLite persistence
+- `kwin_rules.py` - KWin rule integration for native Wayland fallback
+- `kwin_keep_above.js` - KWin always-on-top helper
+- `kwin-script/` - installable KWin script package
+- `run_chincheta.sh` - environment bootstrap and application launcher
+- `tests/` - automated tests

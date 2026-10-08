@@ -1,0 +1,34 @@
+# Virtual environments and Python caches
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Test and tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local application data
+*.db
+*.sqlite
+*.sqlite3
+.delete-venv-on-exit
+
+# Credentials and local configuration
+repo.txt
+AGENTS.md
+.env
+.env.*
+
+# Logs and temporary files
+*.log
+*.tmp
+*~
+
+# Editor and desktop metadata
+.idea/
+.vscode/
+.directory

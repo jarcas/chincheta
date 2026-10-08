@@ -1,6 +1,6 @@
 # Chincheta
 
-Chincheta ist eine schlanke Notizzettel-Anwendung fuer Linux, entwickelt mit
+Chincheta ist eine schlanke Notizzettel-Anwendung für Linux, entwickelt mit
 Python und PySide6.
 
 ## Sprachen
@@ -12,15 +12,15 @@ Python und PySide6.
 ## Funktionen
 
 - Bearbeitbare Desktop-Notizen mit dauerhaft gespeichertem Text, Farbe,
-  Groesse und Position
+  Größe und Position
 - Fette Notiztitel
-- Eigene Notizfarben, einschliesslich eines dringenden Rottons und einer
-  gruenen Option
+- Eigene Notizfarben, einschließlich eines dringenden Rottons und einer
+  grünen Option
 - Eingabe von Farben als Hexadezimalwert
-- Notizen, die sichtbar als immer im Vordergrund markiert werden koennen
+- Notizen, die sichtbar als immer im Vordergrund markiert werden können
 - Integration in die Systemleiste
 - Aktionen zum Anzeigen und Ausblenden aller Notizen
-- Oberflaeche auf Spanisch, Englisch und Deutsch, einstellbar in den
+- Oberfläche auf Spanisch, Englisch und Deutsch, einstellbar in den
   Einstellungen
 - Optionaler automatischer Start mit der Desktop-Sitzung
 - SQLite-Speicherung im Standard-XDG-Datenverzeichnis
@@ -34,19 +34,19 @@ Python und PySide6.
 - Eine X11- oder XWayland-kompatible Desktop-Sitzung
 
 Die getestete Zielumgebung ist KDE Plasma 5.27 in einer Wayland-Sitzung.
-Chincheta verwendet standardmaessig das Qt-Backend `xcb`, weil Qt-Rasterflaechen
+Chincheta verwendet standardmäßig das Qt-Backend `xcb`, weil Qt-Rasterflächen
 in dieser Umgebung mit dem nativen Wayland-Backend Darstellungsfehler zeigten.
 
-## Ausfuehrung
+## Ausführung
 
 ```bash
 chmod +x run_chincheta.sh
 ./run_chincheta.sh
 ```
 
-Der Starter erstellt `.venv` und installiert die festgelegten Abhaengigkeiten,
-wenn sie benoetigt werden. Wenn im Menue der Systemleiste **Beenden** gewaehlt
-wird, entfernt Chincheta die virtuelle Umgebung. Externes Beenden, Abstuerze
+Der Starter erstellt `.venv` und installiert die festgelegten Abhängigkeiten,
+wenn sie benötigt werden. Wenn im Menü der Systemleiste **Beenden** gewählt
+wird, entfernt Chincheta die virtuelle Umgebung. Externes Beenden, Abstürze
 und das Herunterfahren der Sitzung erhalten sie.
 
 ## Desktop-Starter
@@ -102,10 +102,10 @@ python3 -m py_compile chincheta.py storage.py kwin_rules.py
 
 ## Projektstruktur
 
-- `chincheta.py` - Benutzeroberflaeche und Anwendungsverhalten
+- `chincheta.py` - Benutzeroberfläche und Anwendungsverhalten
 - `storage.py` - SQLite-Persistenz
-- `kwin_rules.py` - KWin-Regelintegration fuer die native Wayland-Ausweichloesung
-- `kwin_keep_above.js` - KWin-Helfer fuer "immer im Vordergrund"
+- `kwin_rules.py` - KWin-Regelintegration für die native Wayland-Ausweichlösung
+- `kwin_keep_above.js` - KWin-Helfer für "immer im Vordergrund"
 - `kwin-script/` - installierbares KWin-Skriptpaket
 - `run_chincheta.sh` - Einrichtung der Umgebung und Anwendungsstarter
 - `tests/` - automatisierte Tests

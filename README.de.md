@@ -31,11 +31,22 @@ Python und PySide6.
 - Linux
 - Python 3.12 oder eine kompatible Python-3-Version mit `venv`
 - `pip`
-- Eine X11- oder XWayland-kompatible Desktop-Sitzung
+- Eine X11-Desktop-Sitzung oder eine Wayland-Sitzung mit verfügbarem XWayland
 
-Die getestete Zielumgebung ist KDE Plasma 5.27 in einer Wayland-Sitzung.
-Chincheta verwendet standardmäßig das Qt-Backend `xcb`, weil Qt-Rasterflächen
-in dieser Umgebung mit dem nativen Wayland-Backend Darstellungsfehler zeigten.
+## Desktop-Kompatibilität
+
+Die validierte Zielumgebung ist KDE Plasma 5.27 in einer Wayland-Sitzung mit
+KWin und verfügbarem XWayland.
+
+Chincheta setzt `QT_QPA_PLATFORM=xcb` standardmäßig, sofern der Benutzer diese
+Variable nicht bereits definiert hat. In Wayland-Sitzungen läuft Qt dadurch über
+XWayland. Das ist beabsichtigt: Mit Qt 6.11 zeigten native
+Wayland-Rasterflächen in der Plasma-Zielumgebung Darstellungsfehler während des
+ersten Frames, und XWayland stellt außerdem die globalen Fensterkoordinaten
+bereit, die zum Speichern der Notizpositionen benötigt werden.
+
+Andere X11- oder XWayland-kompatible Desktops können funktionieren, aber KDE
+Plasma 5.27 auf Wayland ist die getestete Umgebung.
 
 ## Ausführung
 

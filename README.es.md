@@ -13,6 +13,7 @@ Python y PySide6.
 
 - Notas de escritorio editables con texto, color, tamaño y posición
   persistentes
+- Redimensionado de notas desde los bordes y las esquinas
 - Títulos de nota en negrita
 - Colores personalizados, incluido un rojo de urgencia y una opción verde
 - Entrada de color hexadecimal

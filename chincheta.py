@@ -135,12 +135,37 @@ class DragHandle(QLabel):
         self.note.end_drag(event)
 
 
+class ResizeHandle(QWidget):
+    """Invisible edge control for resizing a frameless note."""
+
+    def __init__(self, note: "StickyNote", edges: Qt.Edge, cursor: Qt.CursorShape) -> None:
+        super().__init__(note)
+        self.note, self.edges = note, edges
+        self.setCursor(cursor)
+        self.setStyleSheet("background: transparent; border: none;")
+
+    def paintEvent(self, event) -> None:
+        # The parent paints the opaque note background beneath this control.
+        pass
+
+    def mousePressEvent(self, event) -> None:
+        self.note.begin_resize(self.edges, event)
+
+    def mouseMoveEvent(self, event) -> None:
+        self.note.continue_resize(event)
+
+    def mouseReleaseEvent(self, event) -> None:
+        self.note.end_resize(event)
+
+
 class StickyNote(QWidget):
+    RESIZE_BORDER = 7
+
     def __init__(self, app: "ChinchetaApp", note: dict) -> None:
         # Plasma Wayland needs a KWin skip-taskbar rule (installed separately)
         # for persistent editable desktop surfaces.
         super().__init__(None, note_window_flags())
-        self.app, self.note, self.drag_offset = app, note, None
+        self.app, self.note, self.drag_offset, self.resize_state = app, note, None, None
         self.setObjectName("stickyNote")
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent, True)
@@ -173,6 +198,35 @@ class StickyNote(QWidget):
         self._set_hover_hint(self.delete_button, self.app.t("delete"))
         self.body = QTextEdit(); self.body.setPlaceholderText(self.app.t("body")); self.body.setFrameStyle(0); self.body.textChanged.connect(self.save)
         layout.addLayout(header); layout.addWidget(self.body)
+        self.resize_handles = (
+            (ResizeHandle(self, Qt.Edge.TopEdge, Qt.CursorShape.SizeVerCursor), "top"),
+            (ResizeHandle(self, Qt.Edge.BottomEdge, Qt.CursorShape.SizeVerCursor), "bottom"),
+            (ResizeHandle(self, Qt.Edge.LeftEdge, Qt.CursorShape.SizeHorCursor), "left"),
+            (ResizeHandle(self, Qt.Edge.RightEdge, Qt.CursorShape.SizeHorCursor), "right"),
+            (ResizeHandle(self, Qt.Edge.TopEdge | Qt.Edge.LeftEdge, Qt.CursorShape.SizeFDiagCursor), "top_left"),
+            (ResizeHandle(self, Qt.Edge.TopEdge | Qt.Edge.RightEdge, Qt.CursorShape.SizeBDiagCursor), "top_right"),
+            (ResizeHandle(self, Qt.Edge.BottomEdge | Qt.Edge.LeftEdge, Qt.CursorShape.SizeBDiagCursor), "bottom_left"),
+            (ResizeHandle(self, Qt.Edge.BottomEdge | Qt.Edge.RightEdge, Qt.CursorShape.SizeFDiagCursor), "bottom_right"),
+        )
+        self._layout_resize_handles()
+
+    def _layout_resize_handles(self) -> None:
+        """Keep the resize controls above the layout without obscuring its content."""
+        border = self.RESIZE_BORDER
+        width, height = self.width(), self.height()
+        geometries = {
+            "top": (border, 0, max(0, width - 2 * border), border),
+            "bottom": (border, max(0, height - border), max(0, width - 2 * border), border),
+            "left": (0, border, border, max(0, height - 2 * border)),
+            "right": (max(0, width - border), border, border, max(0, height - 2 * border)),
+            "top_left": (0, 0, border, border),
+            "top_right": (max(0, width - border), 0, border, border),
+            "bottom_left": (0, max(0, height - border), border, border),
+            "bottom_right": (max(0, width - border), max(0, height - border), border, border),
+        }
+        for handle, position in self.resize_handles:
+            handle.setGeometry(*geometries[position])
+            handle.raise_()
 
     def _set_hover_hint(self, widget: QWidget, text: str) -> None:
         widget.setProperty("hover_hint", text)
@@ -328,11 +382,43 @@ class StickyNote(QWidget):
         self.drag_offset = None
         self.save_geometry()
 
+    def begin_resize(self, edges: Qt.Edge, event) -> None:
+        if event.button() != Qt.MouseButton.LeftButton:
+            return
+        handle = self.windowHandle()
+        if handle and handle.startSystemResize(edges):
+            self.resize_state = None
+            return
+        self.resize_state = (edges, event.globalPosition().toPoint(), self.geometry())
+
+    def continue_resize(self, event) -> None:
+        if not getattr(self, "resize_state", None) or not event.buttons() & Qt.MouseButton.LeftButton:
+            return
+        edges, start, geometry = self.resize_state
+        delta = event.globalPosition().toPoint() - start
+        left, top, right, bottom = geometry.left(), geometry.top(), geometry.right(), geometry.bottom()
+        minimum = self.minimumSize()
+        if edges & Qt.Edge.LeftEdge:
+            left = min(left + delta.x(), right - minimum.width() + 1)
+        if edges & Qt.Edge.RightEdge:
+            right = max(right + delta.x(), left + minimum.width() - 1)
+        if edges & Qt.Edge.TopEdge:
+            top = min(top + delta.y(), bottom - minimum.height() + 1)
+        if edges & Qt.Edge.BottomEdge:
+            bottom = max(bottom + delta.y(), top + minimum.height() - 1)
+        self.setGeometry(left, top, right - left + 1, bottom - top + 1)
+
+    def end_resize(self, event=None) -> None:
+        self.resize_state = None
+        self.save_geometry()
+
     def moveEvent(self, event) -> None:
         QTimer.singleShot(150, self.save_geometry)
         super().moveEvent(event)
 
     def resizeEvent(self, event) -> None:
+        if hasattr(self, "resize_handles"):
+            self._layout_resize_handles()
         QTimer.singleShot(150, self.save_geometry); super().resizeEvent(event)
 
     def save_geometry(self) -> None:

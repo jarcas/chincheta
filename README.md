@@ -12,6 +12,7 @@ Python and PySide6.
 ## Features
 
 - Editable desktop notes with persistent text, color, size, and position
+- Resize notes from their edges and corners
 - Bold note titles
 - Custom note colors, including an urgent red and a green option
 - Hexadecimal color input

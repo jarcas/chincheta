@@ -13,6 +13,7 @@ Python und PySide6.
 
 - Bearbeitbare Desktop-Notizen mit dauerhaft gespeichertem Text, Farbe,
   Größe und Position
+- Größenänderung von Notizen an Kanten und Ecken
 - Fette Notiztitel
 - Eigene Notizfarben, einschließlich eines dringenden Rottons und einer
   grünen Option
